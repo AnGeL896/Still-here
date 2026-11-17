@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NoteData" format=3]
+
+[ext_resource type="Script" path="res://scripts/story/note_data.gd" id="1_me2po"]
+
+[resource]
+script = ExtResource("1_me2po")
+id = "apt4_note"
+title = "Записка на столе"
+author = "— не подписано"
+pages = PackedStringArray("Хлеб. Спички. Керосин. И лампочка в коридор — опять перегорела.", "Свет не выключать. Пусть видят, что тут кто-то есть.")

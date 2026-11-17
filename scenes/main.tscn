@@ -1,0 +1,212 @@
+﻿[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/level.gd" id="2_level"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="3_player"]
+[ext_resource type="Script" path="res://scripts/camera.gd" id="4_camera"]
+[ext_resource type="Shader" path="res://assets/bg_gradient.gdshader" id="5_shader"]
+[ext_resource type="Script" path="res://scripts/ghost.gd" id="6_ghost"]
+[ext_resource type="Shader" path="res://assets/ghost.gdshader" id="7_ghostshader"]
+[ext_resource type="Script" path="res://scripts/parallax.gd" id="8_parallax"]
+[ext_resource type="Shader" path="res://assets/postfx.gdshader" id="9_postfx"]
+[ext_resource type="Script" path="res://scripts/ghost_recorder.gd" id="10_rec"]
+[ext_resource type="Script" path="res://scripts/story/note_interactable.gd" id="11_noteit"]
+[ext_resource type="Resource" path="res://data/notes/notice_01.tres" id="12_note1"]
+[ext_resource type="Script" path="res://scripts/story/door_transition.gd" id="13_door"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bg"]
+shader = ExtResource("5_shader")
+
+[sub_resource type="Gradient" id="Gradient_light"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ghost"]
+shader = ExtResource("7_ghostshader")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_postfx"]
+shader = ExtResource("9_postfx")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(8, 28)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="Gradient" type="ColorRect" parent="Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_bg")
+
+[node name="Parallax" type="ParallaxBackground" parent="."]
+layer = -5
+script = ExtResource("8_parallax")
+
+[node name="Level" type="Node2D" parent="."]
+script = ExtResource("2_level")
+
+[node name="Window" type="Node2D" parent="."]
+position = Vector2(1440, 112)
+
+[node name="Frame" type="Polygon2D" parent="Window"]
+color = Color(0.101961, 0.121569, 0.160784, 1)
+polygon = PackedVector2Array(-4, -4, 36, -4, 36, 36, -4, 36)
+
+[node name="Glass" type="Polygon2D" parent="Window"]
+color = Color(1, 0.815686, 0.494118, 1)
+polygon = PackedVector2Array(0, 0, 32, 0, 32, 32, 0, 32)
+
+[node name="BarV" type="Polygon2D" parent="Window"]
+color = Color(0.0784314, 0.0862745, 0.109804, 1)
+polygon = PackedVector2Array(15, 0, 17, 0, 17, 32, 15, 32)
+
+[node name="BarH" type="Polygon2D" parent="Window"]
+color = Color(0.0784314, 0.0862745, 0.109804, 1)
+polygon = PackedVector2Array(0, 15, 32, 15, 32, 17, 0, 17)
+
+[node name="Glow" type="PointLight2D" parent="Window"]
+position = Vector2(16, 16)
+color = Color(1, 0.772549, 0.494118, 1)
+energy = 1.1
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 3.0
+
+[node name="Ghost" type="Node2D" parent="."]
+position = Vector2(1150, 256)
+script = ExtResource("6_ghost")
+waypoints = PackedVector2Array(1150, 256, 800, 256)
+walk_speed = 24.0
+trigger_radius = 240.0
+once_flag = "seen_blue"
+watch_radius = 85.0
+body_scale = 0.95
+
+[node name="Visual" type="Node2D" parent="Ghost"]
+
+[node name="Head" type="Polygon2D" parent="Ghost/Visual"]
+material = SubResource("ShaderMaterial_ghost")
+polygon = PackedVector2Array(0, -36, 3.5, -34, 3.5, -30, 0, -28, -3.5, -30, -3.5, -34)
+
+[node name="Body" type="Polygon2D" parent="Ghost/Visual"]
+material = SubResource("ShaderMaterial_ghost")
+polygon = PackedVector2Array(-4, -28, 4, -28, 3, -10, -3, -10)
+
+[node name="LegL" type="Polygon2D" parent="Ghost/Visual"]
+material = SubResource("ShaderMaterial_ghost")
+polygon = PackedVector2Array(-3, -10, -0.5, -10, -0.5, 0, -3, 0)
+
+[node name="LegR" type="Polygon2D" parent="Ghost/Visual"]
+material = SubResource("ShaderMaterial_ghost")
+polygon = PackedVector2Array(0.5, -10, 3, -10, 3, 0, 0.5, 0)
+
+[node name="Light" type="PointLight2D" parent="Ghost"]
+position = Vector2(0, -18)
+color = Color(0.6, 0.78, 1, 1)
+energy = 0.0
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 1.1
+
+[node name="PostFX" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Overlay" type="ColorRect" parent="PostFX"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_postfx")
+[node name="GhostGreen" type="Node2D" parent="."]
+position = Vector2(620, 256)
+script = ExtResource("6_ghost")
+track_path = "res://tracks/rec_20261117_235124.tres"
+waypoints = PackedVector2Array(620, 256, 420, 256)
+walk_speed = 22.0
+trigger_radius = 240.0
+once_flag = "seen_green"
+watch_radius = 85.0
+body_scale = 0.95
+tint = Color(0.55, 0.95, 0.62, 1)
+glow_color = Color(0.45, 1, 0.6, 1)
+
+[node name="Visual" type="Node2D" parent="GhostGreen"]
+
+[node name="Head" type="Polygon2D" parent="GhostGreen/Visual"]
+material = SubResource("ShaderMaterial_ghost")
+polygon = PackedVector2Array(0, -36, 3.5, -34, 3.5, -30, 0, -28, -3.5, -30, -3.5, -34)
+
+[node name="Body" type="Polygon2D" parent="GhostGreen/Visual"]
+material = SubResource("ShaderMaterial_ghost")
+polygon = PackedVector2Array(-4, -28, 4, -28, 3, -10, -3, -10)
+
+[node name="LegL" type="Polygon2D" parent="GhostGreen/Visual"]
+material = SubResource("ShaderMaterial_ghost")
+polygon = PackedVector2Array(-3, -10, -0.5, -10, -0.5, 0, -3, 0)
+
+[node name="LegR" type="Polygon2D" parent="GhostGreen/Visual"]
+material = SubResource("ShaderMaterial_ghost")
+polygon = PackedVector2Array(0.5, -10, 3, -10, 3, 0, 0.5, 0)
+
+[node name="Light" type="PointLight2D" parent="GhostGreen"]
+position = Vector2(0, -18)
+color = Color(0.45, 1, 0.6, 1)
+energy = 0.0
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 1.1
+
+[node name="Recorder" type="Node2D" parent="."]
+script = ExtResource("10_rec")
+[node name="Note1" type="Node2D" parent="."]
+position = Vector2(300, 240)
+script = ExtResource("11_noteit")
+note = ExtResource("12_note1")
+[node name="HouseDoor" type="Node2D" parent="."]
+position = Vector2(1192, 242)
+script = ExtResource("13_door")
+target_scene = "res://scenes/interiors/room_apt4.tscn"
+target_spawn = Vector2(60, 210)
+open_prompt = "E — войти"
+
+[node name="Frame" type="Polygon2D" parent="HouseDoor"]
+color = Color(0.098, 0.086, 0.072, 1)
+polygon = PackedVector2Array(-10, -34, 10, -34, 10, 14, -10, 14)
+
+[node name="Panel" type="Polygon2D" parent="HouseDoor"]
+color = Color(0.150, 0.125, 0.098, 1)
+polygon = PackedVector2Array(-7, -31, 7, -31, 7, 11, -7, 11)
+
+[node name="Handle" type="Polygon2D" parent="HouseDoor"]
+color = Color(0.36, 0.31, 0.23, 1)
+polygon = PackedVector2Array(3, -12, 5, -12, 5, -10, 3, -10)
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(80, 242)
+script = ExtResource("3_player")
+
+[node name="Body" type="Polygon2D" parent="Player"]
+color = Color(0.784314, 0.827451, 0.886275, 1)
+polygon = PackedVector2Array(-4, -14, 4, -14, 4, 14, -4, 14)
+
+[node name="Shape" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Camera" type="Camera2D" parent="Player"]
+position = Vector2(0, -16)
+enabled = true
+script = ExtResource("4_camera")
+target_path = NodePath("..")
