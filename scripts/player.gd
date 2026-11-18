@@ -28,17 +28,29 @@ var _coyote := 0.0
 var _buffer := 0.0
 var _jumping := false
 var _facing := 1.0
-var _body: Polygon2D
+var _body: Node2D
 var frozen := false
 var _nearby: Interactable
 
+## Эффект приземления
+var _was_on_floor := false
+var _walk_t := 0.0
+var _walk_tilt := 0.0
+var _parts: Dictionary = {}
+
+## Фонарик
+var _flashlight_on := false
+
 func _ready() -> void:
 	add_to_group("player")
-	_body = get_node_or_null("Body") as Polygon2D
-	if _body:
-		# визуал отвязываем от родителя и округляем до пикселя:
-		# физика остаётся дробной, а рисуется ровно
-		_body.top_level = true
+	_body = get_node_or_null("Body") as Node2D
+	# top_level не нужен — Body движется вместе с Player
+	# ноги для анимации
+	_parts["LegL"] = _body.get_node_or_null("LegL") if _body else null
+	_parts["LegR"] = _body.get_node_or_null("LegR") if _body else null
+	_parts["BootL"] = _body.get_node_or_null("BootL") if _body else null
+	_parts["BootR"] = _body.get_node_or_null("BootR") if _body else null
+	_parts["Flashlight"] = _body.get_node_or_null("Flashlight") if _body else null
 	floor_snap_length = 4.0
 	floor_stop_on_slope = true
 	floor_max_angle = deg_to_rad(50.0)
@@ -55,11 +67,82 @@ func snap_camera() -> void:
 		cam.call("snap_to_target")
 
 func _process(_delta: float) -> void:
-	if _body:
-		_body.global_position = global_position.round()
 	if frozen:
 		return
 	_update_nearby()
+	_animate(_delta)
+
+func _animate(delta: float) -> void:
+	if _body == null:
+		return
+
+	var on_floor := is_on_floor()
+	var moving := absf(velocity.x) > 6.0 and on_floor
+
+	# наклон тела при ходьбе
+	var target_tilt := 0.0
+	if moving:
+		_walk_t += delta * absf(velocity.x) * 0.08
+		target_tilt = sin(_walk_t) * 1.5
+	else:
+		_walk_t = lerpf(_walk_t, 0.0, delta * 8.0)
+
+	_walk_tilt = lerpf(_walk_tilt, target_tilt, 1.0 - exp(-10.0 * delta))
+	_body.rotation_degrees = _walk_tilt
+	_body.scale.x = _facing
+
+	# ноги — шагают в противофазе
+	if _parts["LegL"] and _parts["LegR"]:
+		var leg_swing := 0.0
+		if moving:
+			leg_swing = sin(_walk_t) * 4.0
+		else:
+			leg_swing = lerpf(_parts["LegL"].rotation_degrees, 0.0, delta * 10.0)
+		_parts["LegL"].rotation_degrees = leg_swing
+		_parts["LegR"].rotation_degrees = -leg_swing
+		_parts["BootL"].rotation_degrees = leg_swing
+		_parts["BootR"].rotation_degrees = -leg_swing
+
+	# фонарик — качается при ходьбе, управляется стрелками/T
+	if _parts["Flashlight"]:
+		var fl := _parts["Flashlight"] as Node2D
+		var spot := fl.get_node_or_null("SpotLight") as PointLight2D
+		var beam := fl.get_node_or_null("FlashlightBeam") as Polygon2D
+
+		# фонарик покачивается при ходьбе
+		var fl_base_x := 5.0
+		var fl_base_y := -13.0
+		if moving:
+			fl.position.x = fl_base_x + sin(_walk_t * 0.5) * 1.0
+			fl.position.y = fl_base_y + absf(sin(_walk_t)) * 0.5
+		else:
+			fl.position.x = lerpf(fl.position.x, fl_base_x, delta * 6.0)
+			fl.position.y = lerpf(fl.position.y, fl_base_y, delta * 6.0)
+
+		# включён ли фонарик (переключается T)
+		var on := _flashlight_on
+
+		# угол луча (стрелки вверх/вниз)
+		var target_angle := 0.0
+		if Input.is_action_pressed("aim_up"):
+			target_angle = -40.0
+		elif Input.is_action_pressed("aim_down"):
+			target_angle = 40.0
+		fl.rotation_degrees = lerpf(fl.rotation_degrees, target_angle, delta * 6.0)
+
+		# свет включается когда темно ИЛИ когда T нажат
+		var dark := false
+		var scene := get_tree().current_scene
+		if scene:
+			var path := scene.scene_file_path.to_lower()
+			dark = "basement" in path or "attic" in path or "room" in path
+		var want_energy := 0.0
+		if on and dark:
+			want_energy = 0.7
+		if spot:
+			spot.energy = lerpf(spot.energy, want_energy, delta * 4.0)
+		if beam:
+			beam.visible = spot.energy > 0.05
 
 func _update_nearby() -> void:
 	var best: Interactable = null
@@ -84,6 +167,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("interact") and _nearby != null:
 		_nearby.interact(self)
+		get_viewport().set_input_as_handled()
+	if event.is_action_pressed("toggle_flashlight"):
+		_flashlight_on = not _flashlight_on
 		get_viewport().set_input_as_handled()
 
 func _physics_process(delta: float) -> void:
@@ -135,6 +221,37 @@ func _physics_process(delta: float) -> void:
 	velocity.y = minf(velocity.y + g * delta, max_fall_speed)
 
 	move_and_slide()
+
+	# эффект приземления
+	if not _was_on_floor and is_on_floor():
+		_on_land()
+	_was_on_floor = is_on_floor()
+
+func _on_land() -> void:
+	# пыль из-под ног
+	var dust := CPUParticles2D.new()
+	dust.one_shot = true
+	dust.amount = 6
+	dust.lifetime = 0.4
+	dust.explosiveness = 0.85
+	dust.direction = Vector2(0, -1)
+	dust.spread = 70.0
+	dust.gravity = Vector2(0, 60)
+	dust.initial_velocity_min = 12.0
+	dust.initial_velocity_max = 28.0
+	dust.scale_amount_min = 0.8
+	dust.scale_amount_max = 1.6
+	dust.color = Color(0.28, 0.26, 0.22, 0.5)
+	dust.emitting = true
+	get_parent().add_child(dust)
+	dust.global_position = global_position + Vector2(0, 14)
+	# удаляем через 1 сек
+	get_tree().create_timer(1.0).timeout.connect(dust.queue_free)
+
+	# тряска камеры
+	var cam := get_node_or_null("Camera") as Camera2D
+	if cam and cam.has_method("shake"):
+		cam.call("shake", 2.5, 0.15)
 
 func get_facing() -> float:
 	return _facing

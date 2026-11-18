@@ -44,8 +44,13 @@ func _ensure_input() -> void:
 		"move_left": [KEY_A, KEY_LEFT],
 		"move_right": [KEY_D, KEY_RIGHT],
 		"jump": [KEY_SPACE, KEY_W, KEY_UP],
-		"listen": [KEY_E],
+		"interact": [KEY_E],
+		"listen": [KEY_Q],
 		"restart": [KEY_R],
+		"pause": [KEY_ESCAPE],
+		"toggle_flashlight": [KEY_T],
+		"aim_up": [KEY_Z],
+		"aim_down": [KEY_X],
 	}
 	for action: String in defs:
 		if not InputMap.has_action(action):

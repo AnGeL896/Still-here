@@ -1,0 +1,127 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="1_level"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/camera.gd" id="3_camera"]
+[ext_resource type="Shader" path="res://assets/postfx.gdshader" id="4_postfx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(8, 28)
+
+[sub_resource type="Gradient" id="Gradient_light"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_postfx"]
+shader = ExtResource("4_postfx")
+
+[node name="OtherSide" type="Node2D"]
+
+[node name="Level" type="Node2D" parent="."]
+script = ExtResource("1_level")
+map_w = 30
+map_h = 16
+plan_id = 0
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(64, 242)
+script = ExtResource("2_player")
+
+[node name="Body" type="Node2D" parent="Player"]
+
+[node name="Head" type="Polygon2D" parent="Player/Body"]
+color = Color(0.72, 0.68, 0.62, 1)
+polygon = PackedVector2Array(-3, -36, 3, -36, 4, -30, 2, -27, -2, -27, -4, -30)
+
+[node name="Hat" type="Polygon2D" parent="Player/Body"]
+color = Color(0.35, 0.22, 0.12, 1)
+polygon = PackedVector2Array(-4, -36, 4, -36, 4, -38, -4, -38)
+
+[node name="Torso" type="Polygon2D" parent="Player/Body"]
+color = Color(0.25, 0.35, 0.42, 1)
+polygon = PackedVector2Array(-4, -27, 4, -27, 4, -10, -4, -10)
+
+[node name="Zipper" type="Polygon2D" parent="Player/Body"]
+color = Color(0.18, 0.22, 0.26, 1)
+polygon = PackedVector2Array(-0.5, -27, 0.5, -27, 0.5, -10, -0.5, -10)
+
+[node name="LegL" type="Polygon2D" parent="Player/Body"]
+color = Color(0.20, 0.22, 0.26, 1)
+polygon = PackedVector2Array(-3, -10, -0.5, -10, -0.5, 0, -3, 0)
+
+[node name="LegR" type="Polygon2D" parent="Player/Body"]
+color = Color(0.20, 0.22, 0.26, 1)
+polygon = PackedVector2Array(0.5, -10, 3, -10, 3, 0, 0.5, 0)
+
+[node name="BootL" type="Polygon2D" parent="Player/Body"]
+color = Color(0.12, 0.10, 0.08, 1)
+polygon = PackedVector2Array(-3.5, -2, -0.5, -2, -0.5, 1, -3.5, 1)
+
+[node name="BootR" type="Polygon2D" parent="Player/Body"]
+color = Color(0.12, 0.10, 0.08, 1)
+polygon = PackedVector2Array(0.5, -2, 3.5, -2, 3.5, 1, 0.5, 1)
+
+[node name="ArmL" type="Polygon2D" parent="Player/Body"]
+color = Color(0.25, 0.35, 0.42, 1)
+polygon = PackedVector2Array(-4, -27, -2.5, -27, -2.5, -14, -4, -14)
+
+[node name="ArmR" type="Polygon2D" parent="Player/Body"]
+color = Color(0.25, 0.35, 0.42, 1)
+polygon = PackedVector2Array(2.5, -27, 4, -27, 4, -14, 2.5, -14)
+
+[node name="HandR" type="Polygon2D" parent="Player/Body"]
+color = Color(0.72, 0.68, 0.62, 1)
+polygon = PackedVector2Array(2, -14, 4.5, -14, 4.5, -11, 2, -11)
+
+[node name="Flashlight" type="Node2D" parent="Player/Body"]
+position = Vector2(5, -13)
+
+[node name="FlashlightBody" type="Polygon2D" parent="Player/Body/Flashlight"]
+color = Color(0.08, 0.08, 0.10, 1)
+polygon = PackedVector2Array(-1.5, -1.5, 1.5, -1.5, 1.5, 1.5, -1.5, 1.5)
+
+[node name="FlashlightBeam" type="Polygon2D" parent="Player/Body/Flashlight"]
+color = Color(1.0, 0.95, 0.75, 0.15)
+polygon = PackedVector2Array(1.5, -1, 40, -12, 40, 12, 1.5, 1)
+
+[node name="SpotLight" type="PointLight2D" parent="Player/Body/Flashlight"]
+position = Vector2(2, 0)
+color = Color(1.0, 0.85, 0.55, 1)
+energy = 0.0
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 4.0
+
+[node name="Shape" type="CollisionShape2D" parent="Player"]
+position = Vector2(0, -14)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Camera" type="Camera2D" parent="Player"]
+position = Vector2(0, -18)
+enabled = true
+script = ExtResource("3_camera")
+target_path = NodePath("..")
+bound_right = 480
+bound_bottom = 272
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.25, 0.28, 0.38, 1)
+
+[node name="PostFX" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Overlay" type="ColorRect" parent="PostFX"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_postfx")

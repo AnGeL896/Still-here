@@ -47,6 +47,7 @@ func get_value(key: String, def = 0):
 func reset() -> void:
 	flags.clear()
 	notes_read.clear()
+	values.clear()
 	chapter = 1
 	save_state()
 

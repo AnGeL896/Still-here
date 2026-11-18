@@ -357,6 +357,10 @@ func _next_hint() -> String:
 	return "Esc — закрыть"
 
 func _input(event: InputEvent) -> void:
+	# пауза перехватывает всё
+	if PauseMenu.is_open():
+		return
+
 	if _safe != null and _safe_root.visible:
 		if _input_safe(event):
 			get_viewport().set_input_as_handled()
@@ -390,3 +394,6 @@ func _close() -> void:
 
 func is_note_open() -> bool:
 	return _note != null and _note_root.visible
+
+func is_safe_open() -> bool:
+	return _safe != null and _safe_root.visible

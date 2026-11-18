@@ -1,18 +1,24 @@
-﻿[gd_scene load_steps=20 format=3]
+﻿[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/level.gd" id="2_level"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="3_player"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="4_camera"]
 [ext_resource type="Shader" path="res://assets/bg_gradient.gdshader" id="5_shader"]
-[ext_resource type="Script" path="res://scripts/ghost.gd" id="6_ghost"]
-[ext_resource type="Shader" path="res://assets/ghost.gdshader" id="7_ghostshader"]
 [ext_resource type="Script" path="res://scripts/parallax.gd" id="8_parallax"]
 [ext_resource type="Shader" path="res://assets/postfx.gdshader" id="9_postfx"]
 [ext_resource type="Script" path="res://scripts/ghost_recorder.gd" id="10_rec"]
+[ext_resource type="Script" path="res://scripts/ghost.gd" id="17_ghost"]
 [ext_resource type="Script" path="res://scripts/story/note_interactable.gd" id="11_noteit"]
 [ext_resource type="Resource" path="res://data/notes/notice_01.tres" id="12_note1"]
+[ext_resource type="Resource" path="res://data/notes/courtyard_note_02.tres" id="12_note2"]
+[ext_resource type="Resource" path="res://data/notes/courtyard_lamp_note.tres" id="12_note3"]
+[ext_resource type="Resource" path="res://data/notes/courtyard_kids_note.tres" id="12_note4"]
+[ext_resource type="Resource" path="res://data/notes/courtyard_mom_note.tres" id="12_note5"]
 [ext_resource type="Script" path="res://scripts/story/door_transition.gd" id="13_door"]
+[ext_resource type="Script" path="res://scripts/rain.gd" id="14_rain"]
+[ext_resource type="Script" path="res://scripts/footsteps.gd" id="15_steps"]
+[ext_resource type="Script" path="res://scripts/ambient.gd" id="16_amb"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bg"]
 shader = ExtResource("5_shader")
@@ -28,9 +34,6 @@ height = 256
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ghost"]
-shader = ExtResource("7_ghostshader")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_postfx"]
 shader = ExtResource("9_postfx")
@@ -87,31 +90,27 @@ texture = SubResource("GradientTexture2D_light")
 texture_scale = 3.0
 
 [node name="Ghost" type="Node2D" parent="."]
-position = Vector2(1150, 256)
-script = ExtResource("6_ghost")
-waypoints = PackedVector2Array(1150, 256, 800, 256)
+position = Vector2(700, 256)
+script = ExtResource("17_ghost")
+waypoints = PackedVector2Array(700, 256, 1192, 256)
 walk_speed = 24.0
-trigger_radius = 240.0
-once_flag = "seen_blue"
-watch_radius = 85.0
+trigger_radius = 250.0
+once_flag = ""
+watch_radius = 30.0
 body_scale = 0.95
 
 [node name="Visual" type="Node2D" parent="Ghost"]
 
 [node name="Head" type="Polygon2D" parent="Ghost/Visual"]
-material = SubResource("ShaderMaterial_ghost")
 polygon = PackedVector2Array(0, -36, 3.5, -34, 3.5, -30, 0, -28, -3.5, -30, -3.5, -34)
 
 [node name="Body" type="Polygon2D" parent="Ghost/Visual"]
-material = SubResource("ShaderMaterial_ghost")
 polygon = PackedVector2Array(-4, -28, 4, -28, 3, -10, -3, -10)
 
 [node name="LegL" type="Polygon2D" parent="Ghost/Visual"]
-material = SubResource("ShaderMaterial_ghost")
 polygon = PackedVector2Array(-3, -10, -0.5, -10, -0.5, 0, -3, 0)
 
 [node name="LegR" type="Polygon2D" parent="Ghost/Visual"]
-material = SubResource("ShaderMaterial_ghost")
 polygon = PackedVector2Array(0.5, -10, 3, -10, 3, 0, 0.5, 0)
 
 [node name="Light" type="PointLight2D" parent="Ghost"]
@@ -132,55 +131,72 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 material = SubResource("ShaderMaterial_postfx")
-[node name="GhostGreen" type="Node2D" parent="."]
-position = Vector2(620, 256)
-script = ExtResource("6_ghost")
-track_path = "res://tracks/rec_20261117_235124.tres"
-waypoints = PackedVector2Array(620, 256, 420, 256)
-walk_speed = 22.0
-trigger_radius = 240.0
-once_flag = "seen_green"
-watch_radius = 85.0
-body_scale = 0.95
-tint = Color(0.55, 0.95, 0.62, 1)
-glow_color = Color(0.45, 1, 0.6, 1)
-
-[node name="Visual" type="Node2D" parent="GhostGreen"]
-
-[node name="Head" type="Polygon2D" parent="GhostGreen/Visual"]
-material = SubResource("ShaderMaterial_ghost")
-polygon = PackedVector2Array(0, -36, 3.5, -34, 3.5, -30, 0, -28, -3.5, -30, -3.5, -34)
-
-[node name="Body" type="Polygon2D" parent="GhostGreen/Visual"]
-material = SubResource("ShaderMaterial_ghost")
-polygon = PackedVector2Array(-4, -28, 4, -28, 3, -10, -3, -10)
-
-[node name="LegL" type="Polygon2D" parent="GhostGreen/Visual"]
-material = SubResource("ShaderMaterial_ghost")
-polygon = PackedVector2Array(-3, -10, -0.5, -10, -0.5, 0, -3, 0)
-
-[node name="LegR" type="Polygon2D" parent="GhostGreen/Visual"]
-material = SubResource("ShaderMaterial_ghost")
-polygon = PackedVector2Array(0.5, -10, 3, -10, 3, 0, 0.5, 0)
-
-[node name="Light" type="PointLight2D" parent="GhostGreen"]
-position = Vector2(0, -18)
-color = Color(0.45, 1, 0.6, 1)
-energy = 0.0
-texture = SubResource("GradientTexture2D_light")
-texture_scale = 1.1
 
 [node name="Recorder" type="Node2D" parent="."]
 script = ExtResource("10_rec")
+
+[node name="TransformerBox" type="Node2D" parent="."]
+position = Vector2(700, 256)
+
+[node name="Body" type="Polygon2D" parent="TransformerBox"]
+color = Color(0.12, 0.14, 0.18, 1)
+polygon = PackedVector2Array(-16, -40, 16, -40, 16, 0, -16, 0)
+
+[node name="Top" type="Polygon2D" parent="TransformerBox"]
+color = Color(0.18, 0.20, 0.24, 1)
+polygon = PackedVector2Array(-18, -40, 18, -40, 18, -44, -18, -44)
+
+[node name="Panel" type="Polygon2D" parent="TransformerBox"]
+color = Color(0.15, 0.17, 0.21, 1)
+polygon = PackedVector2Array(-12, -36, 12, -36, 12, -4, -12, -4)
+
+[node name="Stripe" type="Polygon2D" parent="TransformerBox"]
+color = Color(0.52, 0.42, 0.16, 1)
+polygon = PackedVector2Array(-12, -8, 12, -8, 12, -4, -12, -4)
+
+[node name="Lamp" type="Polygon2D" parent="TransformerBox"]
+color = Color(0.55, 0.16, 0.14, 1)
+polygon = PackedVector2Array(-3, -30, 3, -30, 3, -26, -3, -26)
+
+[node name="Glow" type="PointLight2D" parent="TransformerBox"]
+position = Vector2(0, -28)
+color = Color(0.55, 0.16, 0.14, 1)
+energy = 0.4
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 1.0
+
+[node name="Hum" type="AudioStreamPlayer" parent="TransformerBox"]
+
 [node name="Note1" type="Node2D" parent="."]
 position = Vector2(300, 240)
 script = ExtResource("11_noteit")
 note = ExtResource("12_note1")
+
+[node name="Note2" type="Node2D" parent="."]
+position = Vector2(920, 242)
+script = ExtResource("11_noteit")
+note = ExtResource("12_note2")
+
+[node name="Note3" type="Node2D" parent="."]
+position = Vector2(60, 240)
+script = ExtResource("11_noteit")
+note = ExtResource("12_note3")
+
+[node name="Note4" type="Node2D" parent="."]
+position = Vector2(450, 242)
+script = ExtResource("11_noteit")
+note = ExtResource("12_note4")
+
+[node name="Note5" type="Node2D" parent="."]
+position = Vector2(650, 240)
+script = ExtResource("11_noteit")
+note = ExtResource("12_note5")
+
 [node name="HouseDoor" type="Node2D" parent="."]
 position = Vector2(1192, 242)
 script = ExtResource("13_door")
-target_scene = "res://scenes/interiors/room_apt4.tscn"
-target_spawn = Vector2(60, 210)
+target_scene = "res://scenes/entrance_hall.tscn"
+target_spawn = Vector2(64, 210)
 open_prompt = "E — войти"
 
 [node name="Frame" type="Polygon2D" parent="HouseDoor"]
@@ -194,15 +210,105 @@ polygon = PackedVector2Array(-7, -31, 7, -31, 7, 11, -7, 11)
 [node name="Handle" type="Polygon2D" parent="HouseDoor"]
 color = Color(0.36, 0.31, 0.23, 1)
 polygon = PackedVector2Array(3, -12, 5, -12, 5, -10, 3, -10)
+
+[node name="Rain" type="Node2D" parent="."]
+z_index = -1
+script = ExtResource("14_rain")
+amount = 50
+
+[node name="Footsteps" type="Node2D" parent="."]
+script = ExtResource("15_steps")
+surface = 0
+
+[node name="Fog" type="ColorRect" parent="."]
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 1860.0
+offset_bottom = 320.0
+mouse_filter = 2
+color = Color(0.45, 0.52, 0.65, 0.06)
+z_index = -2
+
+[node name="AmbientHum" type="Node2D" parent="."]
+script = ExtResource("16_amb")
+type = 0
+volume_db = -24.0
+
+[node name="AmbientDrip" type="Node2D" parent="."]
+script = ExtResource("16_amb")
+type = 1
+volume_db = -18.0
+
 [node name="Player" type="CharacterBody2D" parent="."]
 position = Vector2(80, 242)
 script = ExtResource("3_player")
 
-[node name="Body" type="Polygon2D" parent="Player"]
-color = Color(0.784314, 0.827451, 0.886275, 1)
-polygon = PackedVector2Array(-4, -14, 4, -14, 4, 14, -4, 14)
+[node name="Body" type="Node2D" parent="Player"]
+
+[node name="Head" type="Polygon2D" parent="Player/Body"]
+color = Color(0.72, 0.68, 0.62, 1)
+polygon = PackedVector2Array(-3, -36, 3, -36, 4, -30, 2, -27, -2, -27, -4, -30)
+
+[node name="Hat" type="Polygon2D" parent="Player/Body"]
+color = Color(0.35, 0.22, 0.12, 1)
+polygon = PackedVector2Array(-4, -36, 4, -36, 4, -38, -4, -38)
+
+[node name="Torso" type="Polygon2D" parent="Player/Body"]
+color = Color(0.25, 0.35, 0.42, 1)
+polygon = PackedVector2Array(-4, -27, 4, -27, 4, -10, -4, -10)
+
+[node name="Zipper" type="Polygon2D" parent="Player/Body"]
+color = Color(0.18, 0.22, 0.26, 1)
+polygon = PackedVector2Array(-0.5, -27, 0.5, -27, 0.5, -10, -0.5, -10)
+
+[node name="LegL" type="Polygon2D" parent="Player/Body"]
+color = Color(0.20, 0.22, 0.26, 1)
+polygon = PackedVector2Array(-3, -10, -0.5, -10, -0.5, 0, -3, 0)
+
+[node name="LegR" type="Polygon2D" parent="Player/Body"]
+color = Color(0.20, 0.22, 0.26, 1)
+polygon = PackedVector2Array(0.5, -10, 3, -10, 3, 0, 0.5, 0)
+
+[node name="BootL" type="Polygon2D" parent="Player/Body"]
+color = Color(0.12, 0.10, 0.08, 1)
+polygon = PackedVector2Array(-3.5, -2, -0.5, -2, -0.5, 1, -3.5, 1)
+
+[node name="BootR" type="Polygon2D" parent="Player/Body"]
+color = Color(0.12, 0.10, 0.08, 1)
+polygon = PackedVector2Array(0.5, -2, 3.5, -2, 3.5, 1, 0.5, 1)
+
+[node name="ArmL" type="Polygon2D" parent="Player/Body"]
+color = Color(0.25, 0.35, 0.42, 1)
+polygon = PackedVector2Array(-4, -27, -2.5, -27, -2.5, -14, -4, -14)
+
+[node name="ArmR" type="Polygon2D" parent="Player/Body"]
+color = Color(0.25, 0.35, 0.42, 1)
+polygon = PackedVector2Array(2.5, -27, 4, -27, 4, -14, 2.5, -14)
+
+[node name="HandR" type="Polygon2D" parent="Player/Body"]
+color = Color(0.72, 0.68, 0.62, 1)
+polygon = PackedVector2Array(2, -14, 4.5, -14, 4.5, -11, 2, -11)
+
+[node name="Flashlight" type="Node2D" parent="Player/Body"]
+position = Vector2(5, -13)
+
+[node name="FlashlightBody" type="Polygon2D" parent="Player/Body/Flashlight"]
+color = Color(0.08, 0.08, 0.10, 1)
+polygon = PackedVector2Array(-1.5, -1.5, 1.5, -1.5, 1.5, 1.5, -1.5, 1.5)
+
+[node name="FlashlightBeam" type="Polygon2D" parent="Player/Body/Flashlight"]
+color = Color(1.0, 0.95, 0.75, 0.15)
+polygon = PackedVector2Array(1.5, -1, 40, -12, 40, 12, 1.5, 1)
+
+[node name="SpotLight" type="PointLight2D" parent="Player/Body/Flashlight"]
+position = Vector2(2, 0)
+color = Color(1.0, 0.85, 0.55, 1)
+energy = 0.0
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 2.5
 
 [node name="Shape" type="CollisionShape2D" parent="Player"]
+position = Vector2(0, -14)
 shape = SubResource("RectangleShape2D_body")
 
 [node name="Camera" type="Camera2D" parent="Player"]

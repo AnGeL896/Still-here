@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NoteData" format=3]
+
+[ext_resource type="Script" path="res://scripts/story/note_data.gd" id="1_note"]
+
+[resource]
+script = ExtResource("1_note")
+id = "apt4_kitchen_note"
+title = "Список продуктов"
+author = "— почерк нервный"
+pages = PackedStringArray("Мука. Соль. Спички (коробок 5). Керосин — две бутыли. Лампочка 60 Вт полсотни.", "Если не вернусь к вечеру — не жди. Ужин на столе.", "P.S. Кота не выпускай. Он привык к дому.")

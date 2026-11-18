@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NoteData" format=3]
+
+[ext_resource type="Script" path="res://scripts/story/note_data.gd" id="1_note"]
+
+[resource]
+script = ExtResource("1_note")
+id = "courtyard_lamp_note"
+title = "Записка у фонарного столба"
+author = "— приклеена скотчем"
+pages = PackedStringArray("Фонарь не работает третью неделю. Диспетчерская не отвечает.", "Если кто-то из техников будет здесь — передайте, что заявка №4471 всё ещё открыта.", "P.S. В окне 4-й квартиры каждую ночь горит свет. Спросить, не нужно ли чего.")

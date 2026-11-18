@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NoteData" format=3]
+
+[ext_resource type="Script" path="res://scripts/story/note_data.gd" id="1_note"]
+
+[resource]
+script = ExtResource("1_note")
+id = "courtyard_kids_note"
+title = "Детский рисунок"
+author = "— мел на асфальте"
+pages = PackedStringArray("Дом. Солнце. Трансформатор с лицом.", "Подпись: «Это наш дом. Здесь горит свет.»")

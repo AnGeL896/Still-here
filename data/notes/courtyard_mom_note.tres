@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NoteData" format=3]
+
+[ext_resource type="Script" path="res://scripts/story/note_data.gd" id="1_note"]
+
+[resource]
+script = ExtResource("1_note")
+id = "courtyard_mom_note"
+title = "Записка мамы"
+author = "— на скамейке"
+pages = PackedStringArray("Сидела на скамейке, ждала. Света в окне не было видно.", "Потом свет появился. Значит, кто-то дома.", "P.S. Не подходи к трансформатору. Он гудит.")

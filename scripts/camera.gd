@@ -17,6 +17,12 @@ var _target: CharacterBody2D
 var _look := 0.0
 var _pos := Vector2.ZERO
 
+# ─── Тряска ───────────────────────────────────────────────────
+var _shake_t := 0.0
+var _shake_dur := 0.0
+var _shake_mag := 0.0
+var _shake_offset := Vector2.ZERO
+
 func _ready() -> void:
 	_target = get_node_or_null(target_path) as CharacterBody2D
 	limit_left = bound_left
@@ -24,6 +30,11 @@ func _ready() -> void:
 	limit_top = bound_top
 	limit_bottom = bound_bottom
 	snap_to_target()
+
+func shake(magnitude := 3.0, duration := 0.15) -> void:
+	_shake_mag = magnitude
+	_shake_dur = duration
+	_shake_t = duration
 
 func _process(delta: float) -> void:
 	if _target == null:
@@ -37,11 +48,21 @@ func _process(delta: float) -> void:
 	_look = lerpf(_look, want, 1.0 - exp(-look_speed * delta))
 	var goal := _target.global_position + Vector2(_look, vertical_offset)
 	_pos = _pos.lerp(goal, 1.0 - exp(-follow_speed * delta))
-	# округляем до целого пикселя: иначе на 3x-апскейле края дрожат
-	global_position = _pos.round()
+
+	# тряска затухает
+	if _shake_t > 0.0:
+		_shake_t -= delta
+		var k := _shake_t / maxf(_shake_dur, 0.001)
+		_shake_offset = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * _shake_mag * k
+	else:
+		_shake_offset = _shake_offset.lerp(Vector2.ZERO, 1.0 - exp(-20.0 * delta))
+
+	global_position = (_pos + _shake_offset).round()
 
 func snap_to_target() -> void:
 	if _target == null:
 		return
 	_pos = _target.global_position + Vector2(0.0, vertical_offset)
 	global_position = _pos
+	_shake_offset = Vector2.ZERO
+	_shake_t = 0.0

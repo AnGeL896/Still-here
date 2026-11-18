@@ -23,7 +23,7 @@ const GhostTrack = preload("res://scripts/ghost_track.gd")
 ## Сколько секунд стоит и смотрит на игрока перед тем, как начать гаснуть.
 @export var end_hold := 1.0
 @export var fade_in := 0.6
-@export var fade_out := 1.5
+@export var fade_out := 2.0
 
 @export_category("Вид")
 @export var tint := Color(0.62, 0.78, 0.95)
@@ -154,11 +154,20 @@ func _process(delta: float) -> void:
 func _apply_fade(a: float, d := 0.0) -> void:
 	_last_alpha = a
 	_last_dissolve = d
+	# плавное появление/исчезновение через modulate + scale
+	var fade := a * (1.0 - d)
+	modulate = Color(1.0, 1.0, 1.0, fade)
+	# лёгкое уменьшение при исчезновении
+	if d > 0.0:
+		var s := body_scale * (1.0 - d * 0.3)
+		scale = Vector2(s, s)
+	else:
+		scale = Vector2(body_scale, body_scale)
 	if _mat:
 		_mat.set_shader_parameter("alpha", a)
 		_mat.set_shader_parameter("dissolve", d)
 	if _light:
-		_light.energy = glow_energy * a * (1.0 - d)
+		_light.energy = glow_energy * fade
 
 var _last_alpha := 0.0
 var _last_dissolve := 0.0
