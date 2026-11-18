@@ -10,6 +10,11 @@ enum Style { CUPBOARD, DRAWER }
 @export var closed_prompt := "E — открыть"
 @export var open_prompt := "E — закрыть"
 @export var start_open := false
+## Что выпадает при первом открытии (пусто = ничего)
+@export var loot_item_id := ""
+@export var loot_count := 1
+## Уникальный ключ лута. Пусто = имя узла.
+@export var loot_id := ""
 
 const C_FRAME := Color(0.145, 0.118, 0.094)
 const C_DOOR := Color(0.215, 0.175, 0.138)
@@ -19,12 +24,17 @@ const C_HANDLE := Color(0.075, 0.068, 0.060)
 const C_SHADOW := Color(0.0, 0.0, 0.0, 0.35)
 
 var _open := false
+var _looted := false
 var _closed: Array[Node2D] = []
 var _opened: Array[Node2D] = []
 
 func _ready() -> void:
 	super._ready()
+	if loot_id == "":
+		loot_id = name
 	_open = start_open
+	if loot_id != "" and Story.has_flag("looted_" + loot_id):
+		_looted = true
 	_build()
 	_refresh()
 
@@ -106,3 +116,9 @@ func interact(_player: Node) -> void:
 		return
 	_open = not _open
 	_refresh()
+
+	if _open and loot_item_id != "" and not _looted:
+		_looted = true
+		Inventory.add(loot_item_id, loot_count)
+		if loot_id != "":
+			Story.set_flag("looted_" + loot_id)

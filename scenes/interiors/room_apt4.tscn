@@ -1,14 +1,18 @@
-﻿[gd_scene load_steps=14 format=3]
+﻿[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/level.gd" id="1_level"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="3_camera"]
 [ext_resource type="Script" path="res://scripts/story/note_interactable.gd" id="4_note"]
-[ext_resource type="Script" path="res://scripts/story/door_transition.gd" id="5_door"]
+[ext_resource type="Script" path="res://scripts/story/power_door.gd" id="5_pdoor"]
 [ext_resource type="Script" path="res://scripts/story/container_interactable.gd" id="6_box"]
 [ext_resource type="Shader" path="res://assets/postfx.gdshader" id="7_postfx"]
 [ext_resource type="Resource" path="res://data/notes/apt4_note.tres" id="8_note"]
-[ext_resource type="Script" path="res://scripts/story/scene_flow.gd" id="9_flow"]
+[ext_resource type="Script" path="res://scripts/story/pickup_item.gd" id="9_pick"]
+[ext_resource type="Script" path="res://scripts/story/power_source.gd" id="10_psrc"]
+[ext_resource type="Script" path="res://scripts/story/circuit.gd" id="11_circ"]
+[ext_resource type="Script" path="res://scripts/story/door_transition.gd" id="12_door"]
+[ext_resource type="Script" path="res://scripts/story/safe.gd" id="13_safe"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(8, 28)
@@ -75,18 +79,18 @@ texture = SubResource("GradientTexture2D_light")
 texture_scale = 3.2
 
 [node name="Cupboard" type="Node2D" parent="."]
-position = Vector2(120, 208)
+position = Vector2(140, 208)
 script = ExtResource("6_box")
 size = Vector2(24, 34)
 
 [node name="Drawer" type="Node2D" parent="."]
-position = Vector2(196, 208)
+position = Vector2(210, 208)
 script = ExtResource("6_box")
 style = 1
 size = Vector2(20, 14)
 
 [node name="Table" type="Node2D" parent="."]
-position = Vector2(300, 208)
+position = Vector2(310, 208)
 
 [node name="Top" type="Polygon2D" parent="Table"]
 color = Color(0.235, 0.190, 0.150, 1)
@@ -105,23 +109,154 @@ position = Vector2(0, -18)
 script = ExtResource("4_note")
 note = ExtResource("8_note")
 
+[node name="SafeA" type="Node2D" parent="."]
+position = Vector2(352, 208)
+script = ExtResource("13_safe")
+code = "471"
+loot_item_id = "fuse"
+safe_id = "apt_safe"
+
+[node name="FuseBox" type="Node2D" parent="."]
+position = Vector2(80, 208)
+script = ExtResource("10_psrc")
+required_fuses = 3
+fuse_item_id = "fuse"
+
+[node name="AtticLadder" type="Node2D" parent="."]
+position = Vector2(250, 208)
+script = ExtResource("12_door")
+target_scene = "res://scenes/interiors/attic.tscn"
+target_spawn = Vector2(64, 242)
+open_prompt = "E — на чердак"
+
+[node name="Rail1" type="Polygon2D" parent="AtticLadder"]
+color = Color(0.34, 0.28, 0.21, 1)
+polygon = PackedVector2Array(-8, -142, -5, -142, -5, 0, -8, 0)
+
+[node name="Rail2" type="Polygon2D" parent="AtticLadder"]
+color = Color(0.34, 0.28, 0.21, 1)
+polygon = PackedVector2Array(5, -142, 8, -142, 8, 0, 5, 0)
+
+[node name="Rung1" type="Polygon2D" parent="AtticLadder"]
+color = Color(0.30, 0.25, 0.19, 1)
+polygon = PackedVector2Array(-7, -126, 7, -126, 7, -123, -7, -123)
+
+[node name="Rung2" type="Polygon2D" parent="AtticLadder"]
+color = Color(0.30, 0.25, 0.19, 1)
+polygon = PackedVector2Array(-7, -94, 7, -94, 7, -91, -7, -91)
+
+[node name="Rung3" type="Polygon2D" parent="AtticLadder"]
+color = Color(0.30, 0.25, 0.19, 1)
+polygon = PackedVector2Array(-7, -62, 7, -62, 7, -59, -7, -59)
+
+[node name="Rung4" type="Polygon2D" parent="AtticLadder"]
+color = Color(0.30, 0.25, 0.19, 1)
+polygon = PackedVector2Array(-7, -30, 7, -30, 7, -27, -7, -27)
+
+[node name="Hatch" type="Polygon2D" parent="AtticLadder"]
+color = Color(0.105, 0.092, 0.078, 1)
+polygon = PackedVector2Array(-12, -146, 12, -146, 12, -140, -12, -140)
+
+[node name="BasementHatch" type="Node2D" parent="."]
+position = Vector2(430, 208)
+script = ExtResource("12_door")
+target_scene = "res://scenes/interiors/basement.tscn"
+target_spawn = Vector2(64, 210)
+open_prompt = "E — в подвал"
+
+[node name="HatchFrame" type="Polygon2D" parent="BasementHatch"]
+color = Color(0.105, 0.092, 0.078, 1)
+polygon = PackedVector2Array(-14, -6, 14, -6, 14, 2, -14, 2)
+
+[node name="HatchDoor" type="Polygon2D" parent="BasementHatch"]
+color = Color(0.185, 0.155, 0.122, 1)
+polygon = PackedVector2Array(-11, -4, 11, -4, 11, 0, -11, 0)
+
 [node name="Exit" type="Node2D" parent="."]
 position = Vector2(30, 208)
-script = ExtResource("5_door")
+script = ExtResource("5_pdoor")
 target_scene = "res://scenes/main.tscn"
 target_spawn = Vector2(1150, 242)
-open_prompt = "E вЂ” РІС‹Р№С‚Рё"
+open_prompt = "E — выйти"
 
-[node name="ExitFrame" type="Polygon2D" parent="Exit"]
+[node name="Frame" type="Polygon2D" parent="Exit"]
 color = Color(0.105, 0.090, 0.075, 1)
 polygon = PackedVector2Array(-9, -32, 9, -32, 9, 0, -9, 0)
 
-[node name="ExitPanel" type="Polygon2D" parent="Exit"]
+[node name="Panel" type="Polygon2D" parent="Exit"]
 color = Color(0.185, 0.150, 0.118, 1)
 polygon = PackedVector2Array(-6, -29, 6, -29, 6, -2, -6, -2)
 
+[node name="Circuit" type="Node" parent="."]
+script = ExtResource("11_circ")
+source_path = NodePath("../FuseBox")
+consumer_path = NodePath("../Exit")
+
+[node name="Props" type="Node2D" parent="."]
+
+[node name="Counter" type="Node2D" parent="Props"]
+position = Vector2(112, 208)
+
+[node name="Top" type="Polygon2D" parent="Props/Counter"]
+color = Color(0.215, 0.225, 0.250, 1)
+polygon = PackedVector2Array(-14, -18, 14, -18, 14, -14, -14, -14)
+
+[node name="Body" type="Polygon2D" parent="Props/Counter"]
+color = Color(0.125, 0.135, 0.155, 1)
+polygon = PackedVector2Array(-12, -14, 12, -14, 12, 0, -12, 0)
+
+[node name="Sink" type="Polygon2D" parent="Props/Counter"]
+color = Color(0.090, 0.100, 0.118, 1)
+polygon = PackedVector2Array(-7, -18, 5, -18, 5, -15, -7, -15)
+
+[node name="Bed" type="Node2D" parent="Props"]
+position = Vector2(392, 208)
+
+[node name="Frame" type="Polygon2D" parent="Props/Bed"]
+color = Color(0.145, 0.118, 0.094, 1)
+polygon = PackedVector2Array(-22, -14, 22, -14, 22, 0, -22, 0)
+
+[node name="Mattress" type="Polygon2D" parent="Props/Bed"]
+color = Color(0.255, 0.245, 0.235, 1)
+polygon = PackedVector2Array(-20, -20, 20, -20, 20, -14, -20, -14)
+
+[node name="Pillow" type="Polygon2D" parent="Props/Bed"]
+color = Color(0.335, 0.325, 0.305, 1)
+polygon = PackedVector2Array(-18, -21, -6, -21, -6, -16, -18, -16)
+
+[node name="Rug" type="Polygon2D" parent="Props"]
+color = Color(0.155, 0.125, 0.125, 0.8)
+polygon = PackedVector2Array(196, 205, 306, 205, 306, 209, 196, 209)
+
+[node name="Shelf" type="Node2D" parent="Props"]
+position = Vector2(178, 132)
+
+[node name="Board" type="Polygon2D" parent="Props/Shelf"]
+color = Color(0.150, 0.122, 0.096, 1)
+polygon = PackedVector2Array(-16, 0, 16, 0, 16, 2, -16, 2)
+
+[node name="Bracket" type="Polygon2D" parent="Props/Shelf"]
+color = Color(0.105, 0.092, 0.078, 1)
+polygon = PackedVector2Array(-12, 2, -10, 2, -10, 8, -12, 8)
+
+[node name="Pic1" type="Polygon2D" parent="Props"]
+color = Color(0.105, 0.115, 0.135, 1)
+polygon = PackedVector2Array(196, 84, 212, 84, 212, 100, 196, 100)
+
+[node name="Pic2" type="Polygon2D" parent="Props"]
+color = Color(0.095, 0.100, 0.118, 1)
+polygon = PackedVector2Array(352, 96, 366, 96, 366, 110, 352, 110)
+
+[node name="Box1" type="Polygon2D" parent="Props"]
+color = Color(0.190, 0.160, 0.130, 1)
+polygon = PackedVector2Array(338, 192, 356, 192, 356, 208, 338, 208)
+
+[node name="Box2" type="Polygon2D" parent="Props"]
+color = Color(0.165, 0.140, 0.115, 1)
+polygon = PackedVector2Array(358, 198, 370, 198, 370, 208, 358, 208)
+
 [node name="Player" type="CharacterBody2D" parent="."]
-position = Vector2(60, 210)
+position = Vector2(60, 194)
 script = ExtResource("2_player")
 
 [node name="Body" type="Polygon2D" parent="Player"]

@@ -39,6 +39,10 @@ func _ready() -> void:
 	match plan_id:
 		1:
 			_plan_room()
+		2:
+			_plan_basement()
+		3:
+			_plan_attic()
 		_:
 			_plan_courtyard()
 
@@ -161,3 +165,43 @@ func _plan_room() -> void:
 
 	# плинтус
 	_rect(1, gy - 1, map_w - 2, 1, T_WOOD)
+# ─────────────────────────────────────────────────────────────
+#  Подвал
+# ─────────────────────────────────────────────────────────────
+
+func _plan_basement() -> void:
+	var gy := map_h - 2   # линия пола
+
+	_rect(0, gy, map_w, 2, T_STONE)          # пол
+	_rect(0, 0, map_w, 2, T_BRICK)           # потолок
+	_rect(0, 0, 1, gy, T_BRICK)              # левая стена
+	_rect(map_w - 1, 0, 1, gy, T_BRICK)      # правая стена
+
+	# колонны — ФОН, без коллизии (иначе перекрывают проход)
+	_rect(9, 4, 1, gy - 4, T_DEEP)
+	_rect(20, 4, 1, gy - 4, T_DEEP)
+
+	# мусор — только фон, через него можно идти
+	_rect(12, gy - 2, 3, 2, T_DEEP)
+	_rect(23, gy - 2, 2, 2, T_DEEP)
+	_rect(26, gy - 2, 2, 2, T_DEEP)
+
+# ─────────────────────────────────────────────────────────────
+#  Чердак
+# ─────────────────────────────────────────────────────────────
+
+func _plan_attic() -> void:
+	var gy := map_h - 2
+
+	_rect(0, gy, map_w, 2, T_WOOD)           # пол
+	_rect(0, 0, map_w, 2, T_BRICK)           # скат крыши
+	_rect(0, 0, 1, gy, T_BRICK)
+	_rect(map_w - 1, 0, 1, gy, T_BRICK)
+
+	# стропила — ФОН, без коллизии
+	_rect(7, 2, 1, gy - 2, T_DEEP)
+	_rect(19, 2, 1, gy - 2, T_DEEP)
+
+	# хлам — только фон
+	_rect(11, gy - 2, 3, 2, T_DEEP)
+	_rect(23, gy - 2, 4, 2, T_DEEP)

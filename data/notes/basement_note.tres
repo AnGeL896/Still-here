@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NoteData" format=3]
+
+[ext_resource type="Script" path="res://scripts/story/note_data.gd" id="1_winj7"]
+
+[resource]
+script = ExtResource("1_winj7")
+id = "basement_note"
+title = "Листок из журнала"
+author = "— вырвано"
+pages = PackedStringArray("Если полезешь на чердак — там сейф с инструментом. Код 5-1-6.", "Не наступай на третью стропилу, она гнилая.")

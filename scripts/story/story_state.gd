@@ -7,6 +7,8 @@ const SAVE_PATH := "user://story.json"
 
 var flags: Dictionary = {}
 var notes_read: Dictionary = {}
+## Числовые значения (слоты щитка и прочее)
+var values: Dictionary = {}
 var chapter := 1
 
 signal flag_changed(key: String)
@@ -35,6 +37,13 @@ func mark_note_read(id: String) -> void:
 func is_note_read(id: String) -> bool:
 	return bool(notes_read.get(id, false))
 
+func set_value(key: String, v) -> void:
+	values[key] = v
+	save_state()
+
+func get_value(key: String, def = 0):
+	return values.get(key, def)
+
 func reset() -> void:
 	flags.clear()
 	notes_read.clear()
@@ -45,6 +54,7 @@ func save_state() -> void:
 	var data := {
 		"flags": flags,
 		"notes": notes_read,
+		"values": values,
 		"chapter": chapter,
 	}
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -66,4 +76,5 @@ func load_state() -> void:
 		return
 	flags = parsed.get("flags", {})
 	notes_read = parsed.get("notes", {})
+	values = parsed.get("values", {})
 	chapter = int(parsed.get("chapter", 1))

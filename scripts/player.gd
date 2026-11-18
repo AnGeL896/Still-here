@@ -47,6 +47,7 @@ func set_frozen(v: bool) -> void:
 	frozen = v
 	if v:
 		velocity = Vector2.ZERO
+		UI.hide_prompt()
 
 func snap_camera() -> void:
 	var cam := get_node_or_null("Camera") as Camera2D
@@ -73,6 +74,10 @@ func _update_nearby() -> void:
 			best_d = d
 			best = it
 	_nearby = best
+	if best != null:
+		UI.show_prompt(best.get_prompt())
+	else:
+		UI.hide_prompt()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if frozen:

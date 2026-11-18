@@ -1,0 +1,127 @@
+﻿[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="1_level"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/camera.gd" id="3_camera"]
+[ext_resource type="Script" path="res://scripts/story/door_transition.gd" id="4_door"]
+[ext_resource type="Script" path="res://scripts/flicker_light.gd" id="7_flick"]
+[ext_resource type="Shader" path="res://assets/postfx.gdshader" id="6_postfx"]
+[ext_resource type="Script" path="res://scripts/story/safe.gd" id="8_safe"]
+[ext_resource type="Script" path="res://scripts/story/note_interactable.gd" id="9_note"]
+[ext_resource type="Resource" path="res://data/notes/basement_note.tres" id="10_note"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(8, 28)
+
+[sub_resource type="Gradient" id="Gradient_light"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.45, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_postfx"]
+shader = ExtResource("6_postfx")
+
+[node name="Basement" type="Node2D"]
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="Color" type="ColorRect" parent="Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.016, 0.018, 0.026, 1)
+
+[node name="Level" type="Node2D" parent="."]
+script = ExtResource("1_level")
+map_w = 30
+map_h = 16
+plan_id = 2
+
+[node name="Bulb" type="Node2D" parent="."]
+position = Vector2(240, 52)
+
+[node name="Cord" type="Polygon2D" parent="Bulb"]
+color = Color(0.09, 0.09, 0.10, 1)
+polygon = PackedVector2Array(-0.5, 0, 0.5, 0, 0.5, 14, -0.5, 14)
+
+[node name="Glass" type="Polygon2D" parent="Bulb"]
+color = Color(1, 0.86, 0.62, 1)
+polygon = PackedVector2Array(-3, 14, 3, 14, 3, 20, -3, 20)
+
+[node name="Light" type="PointLight2D" parent="Bulb"]
+position = Vector2(0, 18)
+color = Color(1, 0.80, 0.55, 1)
+energy = 0.9
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 2.6
+script = ExtResource("7_flick")
+base_energy = 0.9
+flicker_amount = 0.3
+
+[node name="SafeB" type="Node2D" parent="."]
+position = Vector2(404, 224)
+script = ExtResource("8_safe")
+code = "294"
+loot_item_id = "fuse"
+safe_id = "basement_safe"
+
+[node name="BasementNote" type="Node2D" parent="."]
+position = Vector2(150, 208)
+script = ExtResource("9_note")
+note = ExtResource("10_note")
+
+[node name="Exit" type="Node2D" parent="."]
+position = Vector2(40, 224)
+script = ExtResource("4_door")
+target_scene = "res://scenes/interiors/room_apt4.tscn"
+target_spawn = Vector2(430, 194)
+open_prompt = "E — наверх"
+
+[node name="ExitFrame" type="Polygon2D" parent="Exit"]
+color = Color(0.105, 0.090, 0.075, 1)
+polygon = PackedVector2Array(-9, -32, 9, -32, 9, 0, -9, 0)
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(64, 210)
+script = ExtResource("2_player")
+
+[node name="Body" type="Polygon2D" parent="Player"]
+color = Color(0.784314, 0.827451, 0.886275, 1)
+polygon = PackedVector2Array(-4, -14, 4, -14, 4, 14, -4, 14)
+
+[node name="Shape" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Camera" type="Camera2D" parent="Player"]
+position = Vector2(0, -18)
+enabled = true
+script = ExtResource("3_camera")
+target_path = NodePath("..")
+bound_right = 480
+bound_bottom = 256
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.42, 0.45, 0.55, 1)
+
+[node name="PostFX" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Overlay" type="ColorRect" parent="PostFX"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_postfx")

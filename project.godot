@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 Story="*res://scripts/story/story_state.gd"
 UI="*res://scripts/ui/ui.gd"
 SceneFlow="*res://scripts/story/scene_flow.gd"
+Inventory="*res://scripts/story/inventory.gd"
 
 [display]
 
