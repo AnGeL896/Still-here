@@ -130,9 +130,7 @@ func _plan_courtyard() -> void:
 	_rect(0, gy, map_w, map_h - gy, T_STONE)
 	_rect(0, gy, map_w, 1, T_MOSS)
 
-	_rect(2, 9, 26, gy - 9, T_DEEP)
-	_rect(32, 7, 20, gy - 7, T_DEEP)
-	_rect(56, 10, 16, gy - 10, T_DEEP)
+	# (здания на фоне рисует scripts/building.gd, блоки T_DEEP убраны)
 
 	_rect(0, 4, 1, gy - 4, T_BRICK)
 	_rect(1, 5, 1, gy - 5, T_BRICK)

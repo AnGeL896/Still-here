@@ -19,6 +19,8 @@
 [ext_resource type="Script" path="res://scripts/rain.gd" id="14_rain"]
 [ext_resource type="Script" path="res://scripts/footsteps.gd" id="15_steps"]
 [ext_resource type="Script" path="res://scripts/ambient.gd" id="16_amb"]
+[ext_resource type="Script" path="res://scripts/building.gd" id="18_building"]
+[ext_resource type="Script" path="res://scripts/house_facade.gd" id="19_house"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bg"]
 shader = ExtResource("5_shader")
@@ -60,8 +62,36 @@ material = SubResource("ShaderMaterial_bg")
 layer = -5
 script = ExtResource("8_parallax")
 
+[node name="Building1" type="Node2D" parent="."]
+position = Vector2(32, 256)
+script = ExtResource("18_building")
+width = 416.0
+height = 112.0
+seed = 91
+
+[node name="Building2" type="Node2D" parent="."]
+position = Vector2(512, 256)
+script = ExtResource("18_building")
+width = 320.0
+height = 144.0
+seed = 41
+
+[node name="Building3" type="Node2D" parent="."]
+position = Vector2(896, 256)
+script = ExtResource("18_building")
+width = 256.0
+height = 96.0
+seed = 77
+
 [node name="Level" type="Node2D" parent="."]
 script = ExtResource("2_level")
+
+[node name="HouseFacade" type="Node2D" parent="."]
+position = Vector2(1184, 256)
+script = ExtResource("19_house")
+wall_w = 544.0
+wall_h = 200.0
+door_x = 8.0
 
 [node name="Window" type="Node2D" parent="."]
 position = Vector2(1440, 112)

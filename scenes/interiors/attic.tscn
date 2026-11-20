@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/footsteps.gd" id="8_steps"]
 [ext_resource type="Script" path="res://scripts/ambient.gd" id="11_amb"]
 [ext_resource type="Script" path="res://scripts/story/note_interactable.gd" id="9_note"]
+[ext_resource type="Script" path="res://scripts/story/folding_ladder.gd" id="12_fl"]
 [ext_resource type="Resource" path="res://data/notes/attic_note_01.tres" id="10_note"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
@@ -109,36 +110,40 @@ polygon = PackedVector2Array(-8, -12, 8, -12, 8, -9, -8, -9)
 
 [node name="RoofExit" type="Node2D" parent="."]
 position = Vector2(400, 256)
-script = ExtResource("4_door")
+script = ExtResource("12_fl")
 target_scene = "res://scenes/roof.tscn"
 target_spawn = Vector2(64, 210)
+visual_path = NodePath("LadderVisual")
+folded_offset = -90.0
 open_prompt = "E — на крышу"
 
-[node name="Rail1" type="Polygon2D" parent="RoofExit"]
+[node name="LadderVisual" type="Node2D" parent="RoofExit"]
+
+[node name="Rail1" type="Polygon2D" parent="RoofExit/LadderVisual"]
 color = Color(0.34, 0.28, 0.21, 1)
 polygon = PackedVector2Array(-8, -142, -5, -142, -5, 0, -8, 0)
 
-[node name="Rail2" type="Polygon2D" parent="RoofExit"]
+[node name="Rail2" type="Polygon2D" parent="RoofExit/LadderVisual"]
 color = Color(0.34, 0.28, 0.21, 1)
 polygon = PackedVector2Array(5, -142, 8, -142, 8, 0, 5, 0)
 
-[node name="Rung1" type="Polygon2D" parent="RoofExit"]
+[node name="Rung1" type="Polygon2D" parent="RoofExit/LadderVisual"]
 color = Color(0.3, 0.25, 0.19, 1)
 polygon = PackedVector2Array(-7, -126, 7, -126, 7, -123, -7, -123)
 
-[node name="Rung2" type="Polygon2D" parent="RoofExit"]
+[node name="Rung2" type="Polygon2D" parent="RoofExit/LadderVisual"]
 color = Color(0.3, 0.25, 0.19, 1)
 polygon = PackedVector2Array(-7, -94, 7, -94, 7, -91, -7, -91)
 
-[node name="Rung3" type="Polygon2D" parent="RoofExit"]
+[node name="Rung3" type="Polygon2D" parent="RoofExit/LadderVisual"]
 color = Color(0.3, 0.25, 0.19, 1)
 polygon = PackedVector2Array(-7, -62, 7, -62, 7, -59, -7, -59)
 
-[node name="Rung4" type="Polygon2D" parent="RoofExit"]
+[node name="Rung4" type="Polygon2D" parent="RoofExit/LadderVisual"]
 color = Color(0.3, 0.25, 0.19, 1)
 polygon = PackedVector2Array(-7, -30, 7, -30, 7, -27, -7, -27)
 
-[node name="Hatch" type="Polygon2D" parent="RoofExit"]
+[node name="Hatch" type="Polygon2D" parent="RoofExit/LadderVisual"]
 color = Color(0.105, 0.092, 0.078, 1)
 polygon = PackedVector2Array(-12, -146, 12, -146, 12, -140, -12, -140)
 

@@ -1,56 +1,50 @@
-extends Node2D
+extends DoorTransition
 class_name FoldingLadder
 
-## Складная лестница. В сложенном состоянии висит наверху.
-## При взаимодействии (E) — опускается с анимацией + звук скрипа.
-## После подъёма — складывается обратно.
+## Складная лестница. Точка взаимодействия на полу (неподвижная).
+## Визуал (LadderVisual) складывается вверх. Первый E — опустить, второй E — переход.
 
-@export var folded_y := -100.0  ## Y лестницы в сложенном состоянии (относительно родителя)
-@export var extended_y := 0.0   ## Y лестницы в опущенном состоянии
-@export var fold_speed := 3.0   ## Скорость анимации
-@export var creak_sound := true ## Звук скрипа при движении
+@export var visual_path: NodePath      ## путь к LadderVisual (дочерний узел с лестницей)
+@export var folded_offset := -100.0    ## насколько визуал поднимается вверх (сложено)
+@export var fold_time := 0.7           ## время анимации опускания
 
+var _visual: Node2D
 var _extended := false
 var _tween: Tween
-var _player: CharacterBody2D
-var _can_interact := true
 
 func _ready() -> void:
-	# стартовое состояние — сложено
-	position.y = folded_y
-	# слушаем игрока
-	_player = get_tree().get_first_node_in_group("player") as CharacterBody2D
-
-func _process(delta: float) -> void:
-	if _player == null or not is_instance_valid(_player):
-		return
-	# проверяем, рядом ли игрок
-	var dist := global_position.distance_to(_player.global_position)
-	_can_interact = dist < 40.0
+	super._ready()  # Interactable._ready — add_to_group("interactable")
+	_visual = get_node_or_null(visual_path) as Node2D
+	if _visual:
+		_visual.position.y = folded_offset
+	# промпт по умолчанию — опустить
+	open_prompt = "E — опустить лестницу"
 
 func interact(player: Node) -> void:
-	if not _can_interact:
+	# первый E (лестница сложена) — опустить
+	if not _extended:
+		_extend()
 		return
-	_toggle()
+	# второй E (лестница опущена) — обычный переход двери
+	super.interact(player)
 
-func _toggle() -> void:
-	_extended = not _extended
-	var target_y := extended_y if _extended else folded_y
+func _extend() -> void:
+	_extended = true
+	open_prompt = "E — подняться"
+	if _visual == null:
+		return
 	if _tween and _tween.is_running():
 		_tween.kill()
 	_tween = create_tween()
 	_tween.set_trans(Tween.TRANS_CUBIC)
 	_tween.set_ease(Tween.EASE_OUT)
-	_tween.tween_property(self, "position:y", target_y, 1.0 / fold_speed)
-	# звук скрипа
-	if creak_sound:
-		_play_creak()
+	_tween.tween_property(_visual, "position:y", 0.0, fold_time)
+	_play_creak()
 
 func _play_creak() -> void:
 	var audio := AudioStreamPlayer.new()
 	audio.volume_db = -12.0
 	add_child(audio)
-	# генерируем простой скрип (низкий скрип)
 	var stream := AudioStreamWAV.new()
 	var sr := 22050
 	var duration := 0.6
@@ -75,6 +69,6 @@ func _play_creak() -> void:
 	get_tree().create_timer(duration).timeout.connect(audio.queue_free)
 
 func get_prompt() -> String:
-	if _can_interact:
-		return "E — опустить" if not _extended else "E — поднять"
-	return ""
+	if not _extended:
+		return "E — опустить лестницу"
+	return open_prompt
