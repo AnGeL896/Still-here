@@ -151,4 +151,6 @@ func _ui_has_focus() -> bool:
 		return true
 	if ui.has_method("is_safe_open") and ui.call("is_safe_open"):
 		return true
+	if ui.has_method("is_inventory_open") and ui.call("is_inventory_open"):
+		return true
 	return false

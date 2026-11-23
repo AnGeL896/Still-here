@@ -55,6 +55,7 @@ $g = (Get-ChildItem "$env:USERPROFILE\Downloads" -Recurse -Filter "Godot_v4.7.2-
 | Прыжок | `Space`, `W`, `↑` | `A` |
 | **Взаимодействовать** | **`E`** | **`X`** |
 | **Прислушаться** | `Q` | `Y` |
+| **Инвентарь** | **`TAB`** | — |
 | Рестарт | `R` | `Back` |
 | Запись трека | `F9` | — |
 
@@ -84,7 +85,9 @@ scripts/
 │   ├── container_interactable.gd  шкаф / ящик
 │   └── scene_flow.gd         SceneFlow (автолоад) — затемнение + смена сцены
 ├── ui/
-│   └── ui.gd             UI (автолоад) — окно чтения записок
+│   ├── ui.gd             UI (автолоад) — окно чтения записок, сейф, HUD
+│   ├── pause_menu.gd     PauseMenu (автолоад) — пауза по Esc
+│   └── inventory_overlay.gd  компактный инвентарь (TAB)
 └── story/... 
 
 scenes/

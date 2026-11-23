@@ -5,6 +5,7 @@ extends CanvasLayer
 const VIEW := Vector2(480, 270)
 const CHARS_PER_SEC := 62.0
 const FUSE_TOTAL := 3
+const INVENTORY_OVERLAY := preload("res://scripts/ui/inventory_overlay.gd")
 
 var _hud: Label
 var _prompt: Label
@@ -30,6 +31,8 @@ var _shown := 0.0
 var _typing := false
 var _full := ""
 
+var _inv: Control
+
 func _ready() -> void:
 	# 110 — выше постобработки (100)
 	layer = 110
@@ -37,6 +40,11 @@ func _ready() -> void:
 	_build_hud()
 	_build_prompt()
 	_build_safe()
+
+	# компактный инвентарь (TAB) — последним, чтобы рисоваться поверх
+	_inv = INVENTORY_OVERLAY.new()
+	_inv.name = "InventoryOverlay"
+	add_child(_inv)
 
 func _build_prompt() -> void:
 	# подложка по ширине текста — читается на любом фоне
@@ -361,6 +369,10 @@ func _input(event: InputEvent) -> void:
 	if PauseMenu.is_open():
 		return
 
+	# инвентарь держит ввод у себя
+	if _inv != null and _inv.call("is_open"):
+		return
+
 	if _safe != null and _safe_root.visible:
 		if _input_safe(event):
 			get_viewport().set_input_as_handled()
@@ -397,3 +409,6 @@ func is_note_open() -> bool:
 
 func is_safe_open() -> bool:
 	return _safe != null and _safe_root.visible
+
+func is_inventory_open() -> bool:
+	return _inv != null and _inv.call("is_open")

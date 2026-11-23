@@ -25,7 +25,7 @@ func _ready() -> void:
 func interact(_player: Node) -> void:
 	if not can_interact():
 		return
-	Inventory.add(item_id)
+	Inventory.add(item_id, 1, item_name)
 	Story.set_flag("picked_" + pickup_id)
 	_used = true
 	enabled = false

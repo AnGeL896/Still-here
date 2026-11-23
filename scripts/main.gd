@@ -51,6 +51,7 @@ func _ensure_input() -> void:
 		"toggle_flashlight": [KEY_T],
 		"aim_up": [KEY_Z],
 		"aim_down": [KEY_X],
+		"toggle_inventory": [KEY_TAB],
 	}
 	for action: String in defs:
 		if not InputMap.has_action(action):
