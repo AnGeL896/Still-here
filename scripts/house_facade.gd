@@ -69,8 +69,8 @@ func _build() -> void:
 	lamp.color = Color(1.0, 0.80, 0.50)
 	lamp.energy = lamp_energy
 	var grad := Gradient.new()
-	grad.offsets = PackedFloat32Array(0, 0.4, 1)
-	grad.colors = PackedColorArray(Color(1,1,1,1), Color(1,1,1,0.5), Color(1,1,1,0))
+	grad.offsets = PackedFloat32Array([0.0, 0.4, 1.0])
+	grad.colors = PackedColorArray([Color(1, 1, 1, 1), Color(1, 1, 1, 0.5), Color(1, 1, 1, 0)])
 	var tex := GradientTexture2D.new()
 	tex.gradient = grad
 	tex.width = 128; tex.height = 128; tex.fill = 1
