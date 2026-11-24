@@ -17,6 +17,8 @@
 [ext_resource type="Script" uid="uid://c7bnwrgdypyro" path="res://scripts/story/safe.gd" id="13_safe"]
 [ext_resource type="Script" uid="uid://0ikvu60blxif" path="res://scripts/footsteps.gd" id="14_steps"]
 [ext_resource type="Script" uid="uid://oi2qk46douqc" path="res://scripts/ambient.gd" id="15_amb"]
+[ext_resource type="Script" path="res://scripts/room_apt4_visual.gd" id="17_roomvis"]
+[ext_resource type="Script" path="res://scripts/flicker_light.gd" id="18_flicker"]
 
 [sub_resource type="Gradient" id="Gradient_light"]
 offsets = PackedFloat32Array(0, 0.4, 1)
@@ -24,6 +26,18 @@ colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
 gradient = SubResource("Gradient_light")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_lamp"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.35, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_lamp"]
+gradient = SubResource("Gradient_lamp")
 width = 256
 height = 256
 fill = 1
@@ -66,6 +80,10 @@ plan_id = 1
 color = Color(0.227, 0.192, 0.161, 1)
 polygon = PackedVector2Array(0, 224, 480, 224, 480, 272, 0, 272)
 
+[node name="RoomPaint" type="Node2D" parent="."]
+script = ExtResource("17_roomvis")
+pass_index = 0
+
 [node name="Window" type="Node2D" parent="." unique_id=53645183]
 position = Vector2(248, 72)
 
@@ -88,9 +106,9 @@ polygon = PackedVector2Array(0, 20, 38, 20, 38, 22, 0, 22)
 [node name="Light" type="PointLight2D" parent="Window" unique_id=135507537]
 position = Vector2(19, 21)
 color = Color(0.55, 0.66, 0.88, 1)
-energy = 0.85
+energy = 1.6
 texture = SubResource("GradientTexture2D_light")
-texture_scale = 3.2
+texture_scale = 2.0
 
 [node name="Cupboard" type="Node2D" parent="." unique_id=780065281]
 position = Vector2(140, 208)
@@ -278,6 +296,23 @@ polygon = PackedVector2Array(338, 192, 356, 192, 356, 208, 338, 208)
 color = Color(0.165, 0.14, 0.115, 1)
 polygon = PackedVector2Array(358, 198, 370, 198, 370, 208, 358, 208)
 
+[node name="RoomOverlay" type="Node2D" parent="."]
+script = ExtResource("17_roomvis")
+pass_index = 1
+
+[node name="CeilingLamp" type="Node2D" parent="."]
+position = Vector2(150, 70)
+
+[node name="Light" type="PointLight2D" parent="CeilingLamp"]
+color = Color(1, 0.62, 0.30, 1)
+energy = 5.0
+texture = SubResource("GradientTexture2D_lamp")
+texture_scale = 0.7
+script = ExtResource("18_flicker")
+base_energy = 5.0
+flicker_amount = 0.05
+speed = 3.0
+
 [node name="Player" type="CharacterBody2D" parent="." unique_id=396396481]
 position = Vector2(60, 194)
 script = ExtResource("2_player")
@@ -357,7 +392,7 @@ bound_right = 480
 bound_bottom = 272
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=394039087]
-color = Color(0.3, 0.32, 0.42, 1)
+color = Color(0.38, 0.41, 0.50, 1)
 
 [node name="PostFX" type="CanvasLayer" parent="." unique_id=480040509]
 layer = 100
