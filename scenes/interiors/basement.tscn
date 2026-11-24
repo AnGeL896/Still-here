@@ -12,6 +12,7 @@
 [ext_resource type="Resource" path="res://data/notes/basement_note_02.tres" id="10_note2"]
 [ext_resource type="Script" path="res://scripts/footsteps.gd" id="11_steps"]
 [ext_resource type="Script" path="res://scripts/ambient.gd" id="12_amb"]
+[ext_resource type="Script" path="res://scripts/basement_visual.gd" id="17_basevis"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(8, 28)
@@ -51,6 +52,10 @@ map_w = 30
 map_h = 16
 plan_id = 2
 
+[node name="RoomPaint" type="Node2D" parent="."]
+script = ExtResource("17_basevis")
+pass_index = 0
+
 [node name="Bulb" type="Node2D" parent="."]
 position = Vector2(240, 52)
 
@@ -65,12 +70,12 @@ polygon = PackedVector2Array(-3, 14, 3, 14, 3, 20, -3, 20)
 [node name="Light" type="PointLight2D" parent="Bulb"]
 position = Vector2(0, 18)
 color = Color(1, 0.80, 0.55, 1)
-energy = 0.9
+energy = 2.6
 texture = SubResource("GradientTexture2D_light")
-texture_scale = 2.6
+texture_scale = 1.8
 script = ExtResource("7_flick")
-base_energy = 0.9
-flicker_amount = 0.3
+base_energy = 2.6
+flicker_amount = 0.12
 
 [node name="SafeB" type="Node2D" parent="."]
 position = Vector2(404, 224)
@@ -99,6 +104,10 @@ open_prompt = "E — наверх"
 [node name="ExitFrame" type="Polygon2D" parent="Exit"]
 color = Color(0.105, 0.090, 0.075, 1)
 polygon = PackedVector2Array(-9, -32, 9, -32, 9, 0, -9, 0)
+
+[node name="RoomOverlay" type="Node2D" parent="."]
+script = ExtResource("17_basevis")
+pass_index = 1
 
 [node name="Player" type="CharacterBody2D" parent="."]
 position = Vector2(64, 210)
@@ -181,7 +190,7 @@ bound_right = 480
 bound_bottom = 256
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-color = Color(0.16, 0.18, 0.25, 1)
+color = Color(0.32, 0.34, 0.40, 1)
 
 [node name="Footsteps" type="Node2D" parent="."]
 script = ExtResource("11_steps")

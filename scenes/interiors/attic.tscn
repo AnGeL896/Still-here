@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://scripts/story/note_interactable.gd" id="9_note"]
 [ext_resource type="Script" path="res://scripts/story/folding_ladder.gd" id="12_fl"]
 [ext_resource type="Resource" path="res://data/notes/attic_note_01.tres" id="10_note"]
+[ext_resource type="Script" path="res://scripts/attic_visual.gd" id="17_atticvis"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(8, 28)
@@ -51,14 +52,18 @@ map_w = 30
 map_h = 18
 plan_id = 3
 
+[node name="RoomPaint" type="Node2D" parent="."]
+script = ExtResource("17_atticvis")
+pass_index = 0
+
 [node name="Shaft" type="Node2D" parent="."]
 position = Vector2(300, 40)
 
 [node name="Light" type="PointLight2D" parent="Shaft"]
 color = Color(0.72, 0.80, 0.95, 1)
-energy = 0.55
+energy = 2.6
 texture = SubResource("GradientTexture2D_light")
-texture_scale = 3.0
+texture_scale = 2.6
 
 [node name="SafeC" type="Node2D" parent="."]
 position = Vector2(280, 256)
@@ -147,6 +152,9 @@ polygon = PackedVector2Array(-7, -30, 7, -30, 7, -27, -7, -27)
 color = Color(0.105, 0.092, 0.078, 1)
 polygon = PackedVector2Array(-12, -146, 12, -146, 12, -140, -12, -140)
 
+[node name="RoomOverlay" type="Node2D" parent="."]
+script = ExtResource("17_atticvis")
+pass_index = 1
 
 [node name="Player" type="CharacterBody2D" parent="."]
 position = Vector2(64, 242)
@@ -229,7 +237,7 @@ bound_right = 480
 bound_bottom = 256
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-color = Color(0.22, 0.24, 0.32, 1)
+color = Color(0.38, 0.40, 0.46, 1)
 
 [node name="PostFX" type="CanvasLayer" parent="."]
 layer = 100

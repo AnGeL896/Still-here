@@ -6,6 +6,7 @@
 [ext_resource type="Shader" path="res://assets/postfx.gdshader" id="4_postfx"]
 [ext_resource type="Script" path="res://scripts/story/door_transition.gd" id="5_door"]
 [ext_resource type="Script" path="res://scripts/story/pickup_item.gd" id="6_pick"]
+[ext_resource type="Script" path="res://scripts/room_neighbor_visual.gd" id="17_neighvis"]
 
 [sub_resource type="Gradient" id="Gradient_light"]
 offsets = PackedFloat32Array(0, 0.4, 1)
@@ -49,6 +50,10 @@ plan_id = 1
 color = Color(0.227, 0.192, 0.161, 1)
 polygon = PackedVector2Array(0, 224, 480, 224, 480, 272, 0, 272)
 
+[node name="RoomPaint" type="Node2D" parent="."]
+script = ExtResource("17_neighvis")
+pass_index = 0
+
 [node name="Window" type="Node2D" parent="."]
 position = Vector2(248, 72)
 
@@ -75,6 +80,13 @@ polygon = PackedVector2Array(-8, -2, 46, -2, 46, 4, -8, 4)
 [node name="Board2" type="Polygon2D" parent="Window"]
 color = Color(0.35, 0.28, 0.20, 1)
 polygon = PackedVector2Array(-8, 36, 46, 36, 46, 42, -8, 42)
+
+[node name="Light" type="PointLight2D" parent="Window"]
+position = Vector2(19, 21)
+color = Color(0.55, 0.66, 0.88, 1)
+energy = 2.0
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 2.4
 
 [node name="Table" type="Node2D" parent="."]
 position = Vector2(310, 208)
@@ -140,6 +152,10 @@ polygon = PackedVector2Array(-4, -20, -1, -18, -1, -16, -4, -17)
 [node name="Wear2" type="Polygon2D" parent="Exit"]
 color = Color(0.08, 0.07, 0.06, 0.5)
 polygon = PackedVector2Array(2, -8, 5, -6, 5, -4, 2, -6)
+
+[node name="RoomOverlay" type="Node2D" parent="."]
+script = ExtResource("17_neighvis")
+pass_index = 1
 
 [node name="Player" type="CharacterBody2D" parent="."]
 position = Vector2(64, 210)
@@ -222,7 +238,7 @@ bound_right = 480
 bound_bottom = 272
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-color = Color(0.18, 0.20, 0.28, 1)
+color = Color(0.36, 0.38, 0.44, 1)
 
 [node name="PostFX" type="CanvasLayer" parent="."]
 layer = 100

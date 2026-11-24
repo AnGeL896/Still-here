@@ -1,12 +1,13 @@
-extends Node2D
+extends RoomPainter
 
 ## Визуальный слой комнаты 4.
 ## pass_index 0 — подложка: обои, пол, потолок, плинтус, ambient occlusion.
 ## pass_index 1 — поверх: детали мебели, контуры, свет, пыль.
-##
-## Скрипт локальный для одной сцены: не меняет тайлсет, коллизию и интерактивные объекты.
+## Примитивы и цикл — в RoomPainter.
 
-@export var pass_index := 0
+func _ready() -> void:
+	super._ready()
+	_rng.seed = 77123
 
 const W := 480.0
 const H := 272.0
@@ -26,50 +27,7 @@ const C_HL := Color(0.430, 0.365, 0.280)
 const C_METAL := Color(0.380, 0.390, 0.410)
 const C_DARK := Color(0.0, 0.0, 0.0)
 
-var _rng := RandomNumberGenerator.new()
-var _t := 0.0
-
-func _ready() -> void:
-	_rng.seed = 77123
-	set_process(pass_index == 1)
-
-func _process(delta: float) -> void:
-	_t += delta
-	queue_redraw()
-
-# ─── примитивы ────────────────────────────────────────────────
-
-func _r(x: float, y: float, w: float, h: float, c: Color) -> void:
-	draw_rect(Rect2(x, y, w, h), c)
-
-func _poly(pts: PackedVector2Array, c: Color) -> void:
-	draw_colored_polygon(pts, c)
-
-func _ln(x1: float, y1: float, x2: float, y2: float, c: Color, w := 1.0) -> void:
-	draw_line(Vector2(x1, y1), Vector2(x2, y2), c, w)
-
-func _ol(x: float, y: float, w: float, h: float, c: Color) -> void:
-	draw_rect(Rect2(x, y, w, h), c, false, 1.0)
-
-func _vg(x: float, y: float, w: float, h: float, top: Color, bottom: Color, steps: int) -> void:
-	var n := maxi(steps, 1)
-	for i in n:
-		var k := float(i) / float(maxi(n - 1, 1))
-		_r(x, y + h * float(i) / float(n), w, h / float(n) + 0.6, top.lerp(bottom, k))
-
-func _hgrad(x: float, y: float, w: float, h: float, left: Color, right: Color, steps: int) -> void:
-	var n := maxi(steps, 1)
-	for i in n:
-		var k := float(i) / float(maxi(n - 1, 1))
-		_r(x + w * float(i) / float(n), y, w / float(n) + 0.6, h, left.lerp(right, k))
-
 # ─── слой 0: подложка ─────────────────────────────────────────
-
-func _draw() -> void:
-	if pass_index == 0:
-		_draw_base()
-	else:
-		_draw_overlay()
 
 func _draw_base() -> void:
 	_wall()
@@ -161,13 +119,6 @@ func _wall() -> void:
 		var py := _rng.randf_range(CEIL_Y + 1.0, BASE_Y - 2.0)
 		var light := _rng.randf() < 0.5
 		_r(px, py, 1.0, 1.0, Color(1, 1, 1, 0.022) if light else Color(0, 0, 0, 0.05))
-
-func _crack(pts: PackedVector2Array) -> void:
-	draw_polyline(pts, Color(0.02, 0.02, 0.022, 0.55), 1.0)
-	var shifted := PackedVector2Array()
-	for p in pts:
-		shifted.append(p + Vector2(1.0, 0.0))
-	draw_polyline(shifted, Color(1, 1, 1, 0.05), 1.0)
 
 func _floor() -> void:
 	# доски: тёплые и холодные полосы, стыки, гвозди
